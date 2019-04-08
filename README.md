@@ -96,6 +96,7 @@ only the data format is compatible:
 ```php
 <?php
 tideways_xhprof_swoole_init();
+
 tideways_xhprof_enable();
 
 my_application();
@@ -104,6 +105,7 @@ file_put_contents(
     sys_get_temp_dir() . DIRECTORY_SEPARATOR . uniqid() . '.myapplication.xhprof',
     serialize(tideways_xhprof_disable())
 );
+
 tideways_xhprof_swoole_end();
 
 ```
@@ -114,6 +116,7 @@ there additional metrics passing the `$flags` bitmask to `tideways_xhprof_enable
 ```php
 <?php
 tideways_xhprof_swoole_init();
+
 tideways_xhprof_enable(TIDEWAYS_XHPROF_FLAGS_MEMORY | TIDEWAYS_XHPROF_FLAGS_CPU);
 
 my_application();
@@ -122,6 +125,7 @@ file_put_contents(
     sys_get_temp_dir() . DIRECTORY_SEPARATOR . uniqid() . '.myapplication.xhprof',
     serialize(tideways_xhprof_disable())
 );
+
 tideways_xhprof_swoole_end();
 ```
 
