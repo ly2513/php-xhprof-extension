@@ -33,6 +33,32 @@ PHP_FUNCTION(tideways_xhprof_enable)
     tracing_enter_root_frame(TSRMLS_C);
 }
 
+PHP_FUNCTION(tideways_xhprof_swoole_init)
+{
+    tracing_request_init(TSRMLS_C);
+    tracing_determine_clock_source(TSRMLS_C);
+}
+
+PHP_FUNCTION(tideways_xhprof_swoole_end)
+{
+    int i = 0;
+    xhprof_callgraph_bucket *bucket;
+
+    tracing_end(TSRMLS_C);
+
+    for (i = 0; i < TIDEWAYS_XHPROF_CALLGRAPH_SLOTS; i++) {
+        bucket = TXRG(callgraph_buckets)[i];
+
+        while (bucket) {
+            TXRG(callgraph_buckets)[i] = bucket->next;
+            tracing_callgraph_bucket_free(bucket);
+            bucket = TXRG(callgraph_buckets)[i];
+        }
+    }
+
+    tracing_request_shutdown();
+}
+
 PHP_FUNCTION(tideways_xhprof_disable)
 {
     tracing_end(TSRMLS_C);
@@ -203,6 +229,8 @@ ZEND_DLEXPORT void tideways_xhprof_execute_ex (zend_execute_data *execute_data) 
 const zend_function_entry tideways_xhprof_functions[] = {
     PHP_FE(tideways_xhprof_enable,	NULL)
     PHP_FE(tideways_xhprof_disable,	NULL)
+    PHP_FE(tideways_xhprof_swoole_init,	NULL)
+    PHP_FE(tideways_xhprof_swoole_end,	NULL)
     PHP_FE_END
 };
 
